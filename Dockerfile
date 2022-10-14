@@ -51,8 +51,8 @@ RUN cd /www/server/mdserver-web/plugins/php && \
 
 RUN rm -rf /www/server/mysql/data
 
-ADD ./start.sh /start.sh
-ADD start.service /usr/lib/systemd/system/start.service
+#ADD ./start.sh /start.sh
+#ADD start.service /usr/lib/systemd/system/start.service
 #RUN systemctl enable start
 
 CMD [ "/lib/systemd/systemd", "log-level=info", "unit=sysinit.target" ]
