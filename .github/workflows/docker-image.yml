@@ -2,6 +2,8 @@ name: 构建mw-server镜像
 on:
   schedule:
     - cron: '0 4 */3 * *'
+  workflow_dispatch:
+
 jobs:
   push:
     runs-on: ubuntu-latest
