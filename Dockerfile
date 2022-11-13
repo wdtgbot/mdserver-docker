@@ -10,33 +10,16 @@ RUN rm -f /lib/systemd/system/multi-user.target.wants/* \
   /lib/systemd/system/sysinit.target.wants/systemd-tmpfiles-setup* \
   /lib/systemd/system/systemd-update-utmp*
 
-RUN apt update -y && \
-	apt install -y devscripts && \
-	apt install -y wget zip unzip && \
-    apt-get install -y locales && \
-    localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 && \
-    locale-gen en_US.UTF-8 && \
-    export LC_ALL=en_US.UTF-8 && \
-    export LANG=en_US.UTF-8 && \
-    export LANGUAGE=en_US.UTF-8 && \
-    localedef -i en_US -f UTF-8 en_US.UTF-8 && \
-    mkdir -p /www/server && \
-	mkdir -p /www/wwwroot && \
-	mkdir -p /www/wwwlogs && \
-	mkdir -p /www/backup/database && \
-	mkdir -p /www/backup/site && \
-	wget -O /tmp/dev.zip https://github.com/midoks/mdserver-web/archive/refs/heads/dev.zip && \
-	cd /tmp && unzip /tmp/dev.zip && \
-	mv -f /tmp/mdserver-web-dev /www/server/mdserver-web && \
-	rm -rf /tmp/dev.zip && \
-	rm -rf /tmp/mdserver-web-dev && \
-    cd /www/server/mdserver-web && \
-    bash scripts/install/debian.sh && \
-    cd /www/server/mdserver-web/ && \
+# 安装面板
+RUN curl -fsSL  https://raw.githubusercontent.com/midoks/mdserver-web/dev/scripts/install_dev.sh | bash
+
+# 更改用户名密码
+RUN cd /www/server/mdserver-web/ && \
     /www/server/mdserver-web/bin/python tools.py username username && \
     cd /www/server/mdserver-web/ && \
     /www/server/mdserver-web/bin/python tools.py panel password
 
+# 安装 php nginx mysql phpmyadmin
 RUN cd /www/server/mdserver-web/plugins/php && \
     bash install.sh install 74 && \
     cd /www/server/mdserver-web/plugins/openresty && \
