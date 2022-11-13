@@ -11,7 +11,9 @@ RUN rm -f /lib/systemd/system/multi-user.target.wants/* \
   /lib/systemd/system/systemd-update-utmp*
 
 # 安装面板
-RUN curl -fsSL  https://raw.githubusercontent.com/midoks/mdserver-web/dev/scripts/install_dev.sh | bash
+RUN apt update -y && \
+    apt install -y curl && \
+    curl -fsSL  https://raw.githubusercontent.com/midoks/mdserver-web/dev/scripts/install_dev.sh | bash
 
 # 更改用户名密码
 RUN cd /www/server/mdserver-web/ && \
