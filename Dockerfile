@@ -15,11 +15,12 @@ RUN apt update -y && \
     apt install -y curl && \
     curl -fsSL  https://raw.githubusercontent.com/midoks/mdserver-web/dev/scripts/install_dev.sh | bash
 
-# 更改用户名密码
+# 更改 用户名 密码 Web端口
 RUN cd /www/server/mdserver-web/ && \
     /www/server/mdserver-web/bin/python tools.py username username && \
     cd /www/server/mdserver-web/ && \
-    /www/server/mdserver-web/bin/python tools.py panel password
+    /www/server/mdserver-web/bin/python tools.py panel password && \
+    echo 7200 > /www/server/mdserver-web/data/port.pl
 
 # 安装 php nginx mysql phpmyadmin
 RUN cd /www/server/mdserver-web/plugins/php && \
