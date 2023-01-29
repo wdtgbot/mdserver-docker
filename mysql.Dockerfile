@@ -17,7 +17,7 @@ RUN /www/server/mdserver-web/bin/python tools.py username ${MW_USERNAME} && \
 
 WORKDIR /www
 
-CMD ["/lib/systemd/systemd", "log-level=info"]
+CMD ["/lib/systemd/systemd", "log-level=info", "unit=sysinit.target" ]
 
 EXPOSE 7200 80 443 888
 
