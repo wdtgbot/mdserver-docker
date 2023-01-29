@@ -1,7 +1,7 @@
-name: 构建mw-server镜像
+name: 构建 MW Base镜像
+
 on:
-  schedule:
-    - cron: '0 4 */3 * *'
+    workflow_dispatch:
 
 jobs:
   push:
@@ -27,13 +27,13 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - 
-        name: Buildx
+        name: Build Base
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: Dockerfile
+          file: base.Dockerfile
           platforms: |
             linux/amd64
           push: true
           tags: |
-            ddsderek/mw-server:latest
+            ddsderek/mw:base
