@@ -1,47 +1,40 @@
-FROM debian:10.12-slim
+FROM ddsderek/mw:base
 
-STOPSIGNAL SIGRTMIN+3
+ARG PHP_VERSION=74
+ARG OPENRESTY_VERSION=1.21.4.1
+ARG MYSQL_VERSION=5.6
+ARG PHPMYADMIN_VERSION=4.4.15
+ARG MW_USERNAME=username
+ARG MW_PASSWORD=password
 
-RUN rm -f /lib/systemd/system/multi-user.target.wants/* \
-  /etc/systemd/system/*.wants/* \
-  /lib/systemd/system/local-fs.target.wants/* \
-  /lib/systemd/system/sockets.target.wants/*udev* \
-  /lib/systemd/system/sockets.target.wants/*initctl* \
-  /lib/systemd/system/sysinit.target.wants/systemd-tmpfiles-setup* \
-  /lib/systemd/system/systemd-update-utmp*
-
-# 安装面板
-RUN apt update -y && \
-    apt install -y curl && \
-    curl -fsSL  https://raw.githubusercontent.com/midoks/mdserver-web/dev/scripts/install_dev.sh | bash
-
-# 更改 用户名 密码 Web端口
-RUN cd /www/server/mdserver-web/ && \
-    /www/server/mdserver-web/bin/python tools.py username username && \
-    cd /www/server/mdserver-web/ && \
-    /www/server/mdserver-web/bin/python tools.py panel password && \
-    echo 7200 > /www/server/mdserver-web/data/port.pl
-
-# 安装 php nginx mysql phpmyadmin
+# Installation php
 RUN cd /www/server/mdserver-web/plugins/php && \
-    bash install.sh install 74 && \
-    cd /www/server/mdserver-web/plugins/openresty && \
-    bash install.sh install 1.21.4.1 && \
-    cd /www/server/mdserver-web/plugins/mysql && \
-    bash install.sh install 5.6 && \
-    cd /www/server/mdserver-web/plugins/phpmyadmin && \
-    bash install.sh install 4.4.15 && \
-    systemctl enable openresty && \
-    systemctl enable php74 && \
+    bash install.sh install ${PHP_VERSION} && \
+    systemctl enable php${PHP_VERSION}
+
+# Installation nginx
+RUN cd /www/server/mdserver-web/plugins/openresty && \
+    bash install.sh install ${OPENRESTY_VERSION} && \
+    systemctl enable openresty
+
+# Installation mysql
+RUN cd /www/server/mdserver-web/plugins/mysql && \
+    bash install.sh install ${MYSQL_VERSION} && \
     systemctl enable mysql
 
-RUN rm -rf /www/server/mysql/data
+# Installation phpmyadmin
+RUN cd /www/server/mdserver-web/plugins/phpmyadmin && \
+    bash install.sh install ${PHPMYADMIN_VERSION}
 
-#ADD ./start.sh /start.sh
-#ADD start.service /usr/lib/systemd/system/start.service
-#RUN systemctl enable start
+# Change Username Password Web Port
+WORKDIR /www/server/mdserver-web
+RUN /www/server/mdserver-web/bin/python tools.py username ${MW_USERNAME} && \
+    /www/server/mdserver-web/bin/python tools.py panel ${MW_PASSWORD} && \
+    echo 7200 > /www/server/mdserver-web/data/port.pl
 
-CMD [ "/lib/systemd/systemd", "log-level=info", "unit=sysinit.target" ]
+WORKDIR /www
+
+CMD ["/lib/systemd/systemd", "log-level=info", "unit=sysinit.target" ]
 
 EXPOSE 7200 80 443 888
 
