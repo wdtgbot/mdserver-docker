@@ -1,4 +1,4 @@
-name: 构建 MW Base镜像
+name: 构建 MW Base 镜像
 
 on:
     workflow_dispatch:
