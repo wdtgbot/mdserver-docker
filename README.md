@@ -1,14 +1,15 @@
 # MW Docker
 latest默认安装 ```OpenResty 1.21.4.1``` ```PHP-74``` ```MySQL 5.6``` ```phpMyAdmin 4.4.15```
 
-第一次安装完成mysql不会自动启动，请手动启动
-
 不支持目录挂载，请使用volume的方式存储文件 
 
 容器内数据目录```/www```
 
 默认账号 username
+
 密码 password
+
+Web端口 7200
 
 docker-cli
 ```
